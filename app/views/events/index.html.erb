@@ -1,0 +1,55 @@
+<h1>Billetto Events</h1>
+
+<div id="clerk-auth-container" style="margin-bottom: 20px;"></div>
+
+<script>
+  window.addEventListener("load", async function () {
+    if (!window.Clerk) return;
+    await window.Clerk.load();
+    const authContainer = document.getElementById("clerk-auth-container");
+    
+    if (window.Clerk.user) {
+      window.Clerk.mountUserButton(authContainer);
+      
+      // If Clerk JS sees a user but the Rails backend didn't detect the session cookie yet, reload to send it.
+      <% unless signed_in? %>
+        window.location.reload();
+      <% end %>
+    } else {
+      window.Clerk.mountSignIn(authContainer);
+    }
+  });
+</script>
+
+<p style="color: green"><%= notice %></p>
+<p style="color: red"><%= alert %></p>
+
+<div class="events-list">
+  <% if @events.any? %>
+    <% @events.each do |event| %>
+      <div class="event-card" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; border-radius: 8px;">
+        <% if event.image_url.present? %>
+          <img src="<%= event.image_url %>" alt="<%= event.title %>" style="max-width: 100%; height: auto; border-radius: 4px; margin-bottom: 10px;" />
+        <% end %>
+        <h2><%= event.title %></h2>
+        <p><strong>Date:</strong> <%= event.start_at&.strftime("%B %d, %Y at %I:%M %p") %></p>
+        <% if event.description.present? %>
+          <p><em><%= truncate(event.description, length: 150) %></em></p>
+        <% end %>
+        
+        <p><strong>Votes:</strong> <%= event.vote_count || 0 %></p>
+        
+        <% if signed_in? %>
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <%= button_to "Upvote (Like)", event_votes_path(event.external_id, vote_type: 'upvote'), method: :post, style: 'padding: 5px 10px; cursor: pointer;' %>
+            <%= button_to "Downvote (Dislike)", event_votes_path(event.external_id, vote_type: 'downvote'), method: :post, style: 'padding: 5px 10px; cursor: pointer;' %>
+          </div>
+        <% else %>
+          <p style="margin-top: 10px; font-size: 0.9em; color: #666;"><em>Sign in to vote</em></p>
+        <% end %>
+      </div>
+    <% end %>
+  <% else %>
+    <p>No events found. You might need to fetch them from Billetto API.</p>
+  <% end %>
+</div>
