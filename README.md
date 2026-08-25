@@ -58,7 +58,7 @@ The application's backend architecture was explicitly designed to mirror the pat
 
 ## 🧪 Testing
 
-The RSpec test suite is comprehensive and tests all major layers of the architecture (13 passing tests):
+The RSpec test suite is comprehensive and tests all major layers of the architecture (10 passing tests):
 - **Model Tests**: Validations (including date validation).
 - **Authentication Tests**: Enforces 302 redirects for unauthenticated requests.
 - **Event Store Tests**: Deep integration tests verifying that upvoting successfully dispatches a command, writes an immutable `Fact` to the stream, and correctly triggers the asynchronous Read Model tally.
