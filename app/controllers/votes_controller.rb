@@ -10,6 +10,8 @@ class VotesController < ApplicationController
       command = Voting::Upvote.new(event_id: event_id, user_id: user_id)
     elsif vote_type == 'downvote'
       command = Voting::Downvote.new(event_id: event_id, user_id: user_id)
+    else
+      return redirect_to events_path, alert: "Vote type is invalid"
     end
 
     if command
